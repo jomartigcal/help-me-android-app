@@ -1,7 +1,11 @@
 package com.tigcal.helpme;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
 import android.view.Menu;
@@ -15,8 +19,10 @@ import android.widget.Toast;
 public class MainActivity extends ActionBarActivity {
 
     private static final String CONTACT_NUMBER = "contact_mobile_number";
+    private static final int SELECT_CONTACT = 0;
 
     private SharedPreferences mPreferences;
+    private EditText mContactNumberText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,17 +39,28 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        final EditText contactNumberText = (EditText) findViewById(R.id.text_contact_number);
-        contactNumberText.setText(mPreferences.getString(CONTACT_NUMBER, ""));
+        mContactNumberText = (EditText) findViewById(R.id.text_contact_number);
+        mContactNumberText.setText(mPreferences.getString(CONTACT_NUMBER, ""));
 
         Button saveContactNumber = (Button) findViewById(R.id.button_save);
         saveContactNumber.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveContactNumber(contactNumberText.getText().toString());
+                saveContactNumber(mContactNumberText.getText().toString());
             }
         });
 
+        Button selectContact = (Button) findViewById(R.id.button_get_contact);
+        selectContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, SELECT_CONTACT);
+                }
+            }
+        });
     }
 
     @Override
@@ -62,6 +79,20 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == SELECT_CONTACT && resultCode == RESULT_OK) {
+            Uri contactUri = data.getData();
+            String[] projection = new String[] {ContactsContract.CommonDataKinds.Phone.NUMBER};
+            Cursor cursor = getContentResolver().query(contactUri, projection, null, null, null);
+            if(cursor != null && cursor.moveToFirst()) {
+                int index = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                mContactNumberText.setText(cursor.getString(index));
+            }
+        }
     }
 
     private void saveContactNumber(String contactNumber) {
