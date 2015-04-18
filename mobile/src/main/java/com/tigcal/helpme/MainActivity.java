@@ -61,7 +61,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         mContactNumberText = (EditText) findViewById(R.id.text_contact_number);
         mContactNumberText.setText(mPreferences.getString(CONTACT_NUMBER, ""));
 
-        Button saveContactNumber = (Button) findViewById(R.id.button_save);
+        ImageView saveContactNumber = (ImageView) findViewById(R.id.button_save);
         saveContactNumber.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,7 +69,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
             }
         });
 
-        Button selectContact = (Button) findViewById(R.id.button_get_contact);
+        ImageView selectContact = (ImageView) findViewById(R.id.button_get_contact);
         selectContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
