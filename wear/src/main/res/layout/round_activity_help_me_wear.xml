@@ -7,9 +7,9 @@
     tools:context="com.tigcal.helpme.HelpMeWearActivity"
     tools:deviceIds="wear_round">
 
-    <android.support.wearable.view.BoxInsetLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <!--<android.support.wearable.view.BoxInsetLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
 
         <TextView
             app:layout_box="all"
@@ -19,7 +19,7 @@
             android:text="@string/app_name"
             android:layout_alignParentTop="true"
             android:layout_gravity="center" />
-    </android.support.wearable.view.BoxInsetLayout>
+    <!--</android.support.wearable.view.BoxInsetLayout>-->
 
     <ImageView
         android:id="@+id/image_ask_help"
