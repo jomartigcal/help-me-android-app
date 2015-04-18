@@ -41,6 +41,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     private EditText mContactNumberText;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastKnownLocation;
+    private BroadcastReceiver mReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,12 +122,28 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(SEND_MESSAGE);
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(SEND_MESSAGE.equals(intent.getAction())) {
+                    sendHelpMessage(mContactNumberText.getText().toString());
+                }
+            }
+        };
+        registerReceiver(mReceiver, intentFilter);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         mGoogleApiClient.disconnect();
+        
+        if(mReceiver != null) {
+            unregisterReceiver(mReceiver);
+        }
     }
 
     @Override
@@ -148,18 +165,6 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     private void displayNotification() {
         Intent sendMessageIntent = new Intent(SEND_MESSAGE);
         PendingIntent sendMessagePendingIntent = PendingIntent.getBroadcast(this, 0, sendMessageIntent, 0);
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(SEND_MESSAGE);
-
-        BroadcastReceiver receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if(SEND_MESSAGE.equals(intent.getAction())) {
-                    sendHelpMessage(mContactNumberText.getText().toString());
-                }
-            }
-        };
-        registerReceiver(receiver, intentFilter);
 
         Intent configureIntent = new Intent(this, MainActivity.class);
         configureIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
