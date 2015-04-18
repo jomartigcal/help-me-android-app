@@ -4,7 +4,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_about">About</string>
 
-    <string name="about_contact_info">For comments or suggestions, send an email at <a href="mailto:jomar@tigcal.com">jomar@tigcal.com</a></string>
+    <string name="about_contact_info">For comments or suggestions, send an email at <a href="mailto:jomar@tigcal.com">jomar@tigcal.com</a>\n\n</string>
     <string name="about_developer">Developed by <a href="http://jomar.tigcal.com">Jomar Tigcal</a> and <a href="http://celinebarrozo.com">Celine Marie Barrozo</a>.\n</string>
 
     <string name="contact_name">Contact Name</string>
