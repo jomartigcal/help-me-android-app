@@ -81,6 +81,14 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void askForHelp() {
-        //TODO
+        sendHelpMessage(mPreferences.getString(CONTACT_NUMBER, ""));
+    }
+
+    private void sendHelpMessage(String contactNumber) {
+        SmsManager smsManager = SmsManager.getDefault();
+        //TODO add location
+        //TODO check if sent via pending intent
+
+        smsManager.sendTextMessage(contactNumber, null, "Hello! I need help!", null, null);
     }
 }
