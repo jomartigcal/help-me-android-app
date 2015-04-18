@@ -30,7 +30,6 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 
     private static final String CONTACT_NUMBER = "com.tigcal.helpme.contact_mobile_number";
     public static final String SEND_MESSAGE = "com.tigcal.helpme.send_message";
-    public static final String NOTIFICATION_EXTRA = "com.tigcal.helpme.notification_extra";
 
     private static final int SELECT_CONTACT = 0;
     private static final int HELP_ME = 1;
@@ -159,7 +158,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 
 
         Intent turnOffIntent = new Intent(this, NotificationActivity.class);
-        turnOffIntent.putExtra(NOTIFICATION_EXTRA, HELP_ME);
+        turnOffIntent.putExtra(NotificationActivity.NOTIFICATION_EXTRA, HELP_ME);
         configureIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent turnOfPendingIntent = PendingIntent.getActivity(this, 0, turnOffIntent, PendingIntent.FLAG_UPDATE_CURRENT);

@@ -9,15 +9,17 @@ import android.view.MenuItem;
 
 public class NotificationActivity extends ActionBarActivity {
 
+    public static final String NOTIFICATION_EXTRA = "com.tigcal.helpme.notification_extra";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(!getIntent().hasExtra(MainActivity.NOTIFICATION_EXTRA)){
+        if(!getIntent().hasExtra(NOTIFICATION_EXTRA)){
             return;
         }
 
-        int notificationId = getIntent().getIntExtra(MainActivity.NOTIFICATION_EXTRA, 0);
+        int notificationId = getIntent().getIntExtra(NOTIFICATION_EXTRA, 0);
 
         NotificationManagerCompat.from(this).cancel(notificationId);
         finish();
