@@ -7,19 +7,21 @@
     tools:context="com.tigcal.helpme.HelpMeWearActivity"
     tools:deviceIds="wear_round">
 
-    <!--<android.support.wearable.view.BoxInsetLayout-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent">-->
+    <android.support.wearable.view.BoxInsetLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true">
 
-    <TextView
-        app:layout_box="all"
-        android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:layout_alignParentTop="true"
-        android:layout_gravity="center" />
-    <!--</android.support.wearable.view.BoxInsetLayout>-->
+        <TextView
+            app:layout_box="top"
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:layout_alignParentTop="true"
+            android:paddingTop="20dp"
+            android:layout_gravity="center_horizontal" />
+    </android.support.wearable.view.BoxInsetLayout>
 
     <ImageView
         android:id="@+id/image_ask_help"
