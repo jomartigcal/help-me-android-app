@@ -172,10 +172,10 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         configureIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, configureIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Action configureAction = new NotificationCompat.Action.Builder(
-                R.drawable.ic_notif_alert, "Configure", pendingIntent)
+                R.drawable.ic_configure, "Configure", pendingIntent)
                 .build();
         NotificationCompat.Action wearableConfigureAction = new NotificationCompat.Action.Builder(
-                R.drawable.ic_notif_alert, "Configure on Phone", pendingIntent)
+                R.drawable.ic_configure, "Configure on Phone", pendingIntent)
                 .build();
 
         Intent turnOffIntent = new Intent(this, Receiver.class);//"turn off");//new Intent(this, MainActivity.class);
@@ -184,7 +184,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         configureIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent turnOfPendingIntent = PendingIntent.getActivity(this, 0, turnOffIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Action turnOffAction = new NotificationCompat.Action.Builder(
-                R.drawable.ic_notif_alert, "Turn Off", turnOfPendingIntent)
+                R.drawable.ic_turn_off, "Turn Off", pi)
                 .build();
 
         Notification notification = new NotificationCompat.Builder(this)
