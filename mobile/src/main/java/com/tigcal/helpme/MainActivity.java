@@ -2,7 +2,10 @@ package com.tigcal.helpme;
 
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
@@ -48,14 +51,6 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 
         buildGoogleApiClient();
 
-        ImageView askHelpImage = (ImageView) findViewById(R.id.image_ask_help);
-        askHelpImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                askForHelp();
-            }
-        });
-
         mContactNumberText = (EditText) findViewById(R.id.text_contact_number);
         mContactNumberText.setText(mPreferences.getString(CONTACT_NUMBER, ""));
 
@@ -76,6 +71,14 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(intent, SELECT_CONTACT);
                 }
+            }
+        });
+
+        ImageView askHelpImage = (ImageView) findViewById(R.id.image_ask_help);
+        askHelpImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                askForHelp();
             }
         });
 
@@ -129,9 +132,9 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if(getIntent().hasExtra(SEND_MESSAGE)) {
-            sendHelpMessage(mContactNumberText.getText().toString());
-        }
+//        if(getIntent().hasExtra(SEND_MESSAGE)) {
+//            sendHelpMessage(mContactNumberText.getText().toString());
+//        }
     }
 
     private synchronized void buildGoogleApiClient() {
@@ -143,12 +146,24 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     }
 
     private void displayNotification() {
+        Intent sendMessageIntent = new Intent(SEND_MESSAGE);
+        PendingIntent sendMessagePendingIntent = PendingIntent.getBroadcast(this, 0, sendMessageIntent, 0);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(SEND_MESSAGE);
+
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(SEND_MESSAGE.equals(intent.getAction())) {
+                    sendHelpMessage(mContactNumberText.getText().toString());
+                }
+            }
+        };
+        registerReceiver(receiver, intentFilter);
+
         Intent configureIntent = new Intent(this, MainActivity.class);
-//        configureIntent.putExtra(SEND_MESSAGE, true);
         configureIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, configureIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
         NotificationCompat.Action configureAction = new NotificationCompat.Action.Builder(
                 R.drawable.ic_notif_alert, "Configure", pendingIntent)
                 .build();
@@ -156,13 +171,10 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 R.drawable.ic_notif_alert, "Configure on Phone", pendingIntent)
                 .build();
 
-
         Intent turnOffIntent = new Intent(this, NotificationActivity.class);
         turnOffIntent.putExtra(NotificationActivity.NOTIFICATION_EXTRA, HELP_ME);
         configureIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
         PendingIntent turnOfPendingIntent = PendingIntent.getActivity(this, 0, turnOffIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
         NotificationCompat.Action turnOffAction = new NotificationCompat.Action.Builder(
                 R.drawable.ic_notif_alert, "Turn Off", turnOfPendingIntent)
                 .build();
@@ -171,7 +183,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 .setContentText(getString(R.string.label_ask_help))
                 .setContentTitle(getString(R.string.app_name))
                 .setSmallIcon(R.drawable.ic_notif_alert)
-//                .setContentIntent(pendingIntent)
+                .setContentIntent(sendMessagePendingIntent)
 //                .setOngoing(true)
                 .addAction(configureAction)
                 .addAction(turnOffAction)
@@ -199,7 +211,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     }
 
     private void askForHelp() {
-        sendHelpMessage(mPreferences.getString(CONTACT_NUMBER, ""));
+        sendHelpMessage(mContactNumberText.getText().toString());
     }
 
     private void sendHelpMessage(String contactNumber) {
