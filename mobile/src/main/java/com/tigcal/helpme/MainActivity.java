@@ -142,17 +142,24 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     }
 
     private void displayNotification() {
-        Intent askHelpIntent = new Intent(this, MainActivity.class);
-        askHelpIntent.putExtra(SEND_MESSAGE, true);
+        Intent configureIntent = new Intent(this, MainActivity.class);
+//        configureIntent.putExtra(SEND_MESSAGE, true);
+        configureIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, askHelpIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, configureIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Action configureAction = new NotificationCompat.Action.Builder(
+                R.drawable.ic_notif_alert, "Configure", pendingIntent)
+                .build();
 
         Notification notification = new NotificationCompat.Builder(this)
-                .setContentText("sample")
+                .setContentText(getString(R.string.label_ask_help))
                 .setContentTitle(getString(R.string.app_name))
                 .setSmallIcon(R.drawable.ic_notif_alert)
-                .setContentIntent(pendingIntent)
-//                .setOngoing(true)
+//                .setContentIntent(pendingIntent)
+                .setOngoing(true)
+                .addAction(configureAction)
+//                .addAction()//TODO close
                 .build();
         NotificationManagerCompat.from(this).notify(HELP_ME, notification);
     }
