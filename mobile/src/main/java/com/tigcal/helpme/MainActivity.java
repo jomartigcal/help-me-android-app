@@ -29,7 +29,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-
+    private static final String TAG = "MainActivity";
     private static final String SEND_MESSAGE = "com.tigcal.helpme.send_message";
     private static final String CONTACT_NUMBER = "com.tigcal.helpme.contact_mobile_number";
     private static final int SELECT_CONTACT = 0;
@@ -231,17 +231,18 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 
     @Override
     public void onConnected(Bundle bundle) {
+        Log.d(TAG, "onConnected(): Successfully connected to Google API client");
         mLastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.d(getString(R.string.app_name), "onConnectionSuspended:" + i);
+        Log.d(TAG, "onConnectionSuspended(): Connection to Google API client was suspended");
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.d(getString(R.string.app_name), "onConnectionFailed");
+        Log.e(TAG, "onConnectionFailed(): Failed to connect, with result: " + connectionResult);
     }
 
 }
