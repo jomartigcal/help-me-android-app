@@ -151,15 +151,21 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         NotificationCompat.Action configureAction = new NotificationCompat.Action.Builder(
                 R.drawable.ic_notif_alert, "Configure", pendingIntent)
                 .build();
+        NotificationCompat.Action wearableConfigureAction = new NotificationCompat.Action.Builder(
+                R.drawable.ic_notif_alert, "Configure on Phone", pendingIntent)
+                .build();
 
         Notification notification = new NotificationCompat.Builder(this)
                 .setContentText(getString(R.string.label_ask_help))
                 .setContentTitle(getString(R.string.app_name))
                 .setSmallIcon(R.drawable.ic_notif_alert)
 //                .setContentIntent(pendingIntent)
-                .setOngoing(true)
+//                .setOngoing(true)
                 .addAction(configureAction)
-//                .addAction()//TODO close
+                        //                .addAction()//TODO close
+                .extend(new NotificationCompat.WearableExtender()
+                                .addAction(wearableConfigureAction)
+                )
                 .build();
         NotificationManagerCompat.from(this).notify(HELP_ME, notification);
     }
