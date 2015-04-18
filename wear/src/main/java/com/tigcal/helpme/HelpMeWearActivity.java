@@ -1,7 +1,9 @@
 package com.tigcal.helpme;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.wearable.activity.ConfirmationActivity;
 import android.support.wearable.view.WatchViewStub;
 import android.util.Log;
 import android.view.View;
@@ -73,6 +75,12 @@ public class HelpMeWearActivity extends Activity implements GoogleApiClient.Conn
                 final List<Node> nodes = connectedNodesResult.getNodes();
                 for (int i = 0; i < nodes.size(); i++) {
                     Wearable.MessageApi.sendMessage(mGoogleApiClient, nodes.get(i).getId(), HANDHELD_PATH, null);
+                }
+                if(!nodes.isEmpty()) {
+                    Intent intent = new Intent(HelpMeWearActivity.this, ConfirmationActivity.class);
+                    intent.putExtra(ConfirmationActivity.EXTRA_MESSAGE, getString(R.string.message_sms_sent));
+                    intent.putExtra(ConfirmationActivity.EXTRA_ANIMATION_TYPE, ConfirmationActivity.SUCCESS_ANIMATION);
+                    startActivity(intent);
                 }
             }
         });

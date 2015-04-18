@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Help Me</string>
     <string name="label_ask_for_help">Ask for Help</string>
+    <string name="message_sms_sent">Text Sent</string>
 
     <string name="hello">Hello World!</string>
     <string name="title">Hello Notification!</string>
