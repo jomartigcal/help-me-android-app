@@ -33,6 +33,7 @@
             </intent-filter>
         </service>
         <receiver android:name=".MainActivity$Receiver" />
+        <receiver android:name=".SmsSendingReceiver" />
     </application>
 
 </manifest>

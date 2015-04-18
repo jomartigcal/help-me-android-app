@@ -129,12 +129,9 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         mGoogleApiClient.connect();
 
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(SEND_MESSAGE);
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (SEND_MESSAGE.equals(intent.getAction())) {
-                    sendHelpMessage(mContactNumberText.getText().toString());
                 }
             }
         };
@@ -168,7 +165,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     }
 
     private void displayNotification() {
-        Intent sendMessageIntent = new Intent(SEND_MESSAGE);
+        Intent sendMessageIntent = new Intent(this, SmsSendingReceiver.class);
         PendingIntent sendMessagePendingIntent = PendingIntent.getBroadcast(this, 0, sendMessageIntent, 0);
 
         Intent configureIntent = new Intent(this, MainActivity.class);
