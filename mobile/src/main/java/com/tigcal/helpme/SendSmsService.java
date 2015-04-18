@@ -30,16 +30,11 @@ public class SendSmsService extends IntentService {
     }
 
     private void sendMessage(String contactNumber, double latitude, double longitude) {
-        //TODO invalid number or none set yet
         StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append("Please help me! I am in an emergency! ");//TODO strings.xml
 
         if (latitude != 0 && longitude != 0) {
-            //TODO check comparison
-            messageBuilder.append("My last location is near the following GPS coordinates: ");//TODO strings.xml
-            messageBuilder.append(String.valueOf(latitude));
-            messageBuilder.append(",");
-            messageBuilder.append(String.valueOf(longitude));
+            messageBuilder.append(String.format(getString(R.string.message_location), String.valueOf(latitude), String.valueOf(longitude)));
         }
 
         if (contactNumber != null) {

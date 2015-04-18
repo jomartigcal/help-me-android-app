@@ -15,5 +15,6 @@
     <string name="label_save_contact">Save Contact Number</string>
 
     <string name="message_invalid_contact_number">Please provide a valid contact number</string>
-
+    <string name="message_location">My last location is near the following GPS coordinates: %1$s,%2$s</string>
+    
 </resources>
