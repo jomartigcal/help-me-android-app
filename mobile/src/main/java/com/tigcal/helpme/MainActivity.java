@@ -40,6 +40,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     private static final int HELP_ME = 1;
 
     private boolean requestingLocationUpdate = true;
+    private boolean sendMessages = false;
 
     private SharedPreferences mPreferences;
     private EditText mContactNumberText;
@@ -87,8 +88,15 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 askForHelp();
             }
         });
-
-        displayNotification();
+//
+//        if(getIntent().hasExtra(NotificationActivity.NOTIFICATION_EXTRA)) {
+//            displayMessage("turn off");
+//            int notificationId = getIntent().getIntExtra(NotificationActivity.NOTIFICATION_EXTRA, 0);
+//            NotificationManagerCompat.from(this).cancel(notificationId);
+//            stopLocationUpdates();
+//        } else {
+            displayNotification();
+//        }
     }
 
     @Override
@@ -129,9 +137,15 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         mGoogleApiClient.connect();
 
         IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("turn off");
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if("turn off".equals(intent.getAction())) {
+                    displayMessage("turn off");
+                    int notificationId = getIntent().getIntExtra(NotificationActivity.NOTIFICATION_EXTRA, 0);
+                    NotificationManagerCompat.from(MainActivity.this).cancel(notificationId);
+                    stopLocationUpdates();
                 }
             }
         };
@@ -179,10 +193,12 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 .build();
 
         Intent turnOffIntent = new Intent(this, Receiver.class);//"turn off");//new Intent(this, MainActivity.class);
-        Intent turnOffIntent = new Intent(this, NotificationActivity.class);
-        turnOffIntent.putExtra(NotificationActivity.NOTIFICATION_EXTRA, HELP_ME);
-        configureIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent turnOfPendingIntent = PendingIntent.getActivity(this, 0, turnOffIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        turnOffIntent.putExtra(NotificationActivity.NOTIFICATION_EXTRA, HELP_ME);
+//        configureIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent turnOfPendingIntent = PendingIntent.getActivity(this, 0, turnOffIntent, 0);//PendingIntent.FLAG_UPDATE_CURRENT);
+
+        PendingIntent pi = PendingIntent.getBroadcast(this, 0,turnOffIntent, 0);
+
         NotificationCompat.Action turnOffAction = new NotificationCompat.Action.Builder(
                 R.drawable.ic_turn_off, "Turn Off", pi)
                 .build();
@@ -193,6 +209,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 .setSmallIcon(R.drawable.ic_notif_alert)
                 .setContentIntent(sendMessagePendingIntent)
                 .setOngoing(true)
+//                .setDeleteIntent()
                 .addAction(configureAction)
                 .addAction(turnOffAction)
                 .extend(new NotificationCompat.WearableExtender()
@@ -233,6 +250,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     }
 
     private void sendHelpMessage(String contactNumber) {
+        sendMessages = true;
         startService(new Intent(this, SendSmsService.class));
     }
 
@@ -257,6 +275,8 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 
     private void stopLocationUpdates() {
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        sendMessages = false;
+        requestingLocationUpdate = false;
     }
 
     private void saveLocation(Location location) {
@@ -280,6 +300,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     public void onLocationChanged(Location location) {
         mLastKnownLocation = location;
         saveLocation(location);
+        startService(new Intent(this, SendSmsService.class));
     }
 
     private void createLocationRequest() {
