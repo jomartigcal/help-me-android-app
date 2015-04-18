@@ -1,5 +1,7 @@
 package com.tigcal.helpme;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -7,6 +9,8 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
 import android.util.Log;
@@ -26,6 +30,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 
     private static final String CONTACT_NUMBER = "contact_mobile_number";
     private static final int SELECT_CONTACT = 0;
+    private static final int HELP_ME = 1;
 
     private SharedPreferences mPreferences;
     private EditText mContactNumberText;
@@ -40,6 +45,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         mPreferences = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
 
         buildGoogleApiClient();
+        displayNotification();
 
         ImageView askHelpImage = (ImageView) findViewById(R.id.image_ask_help);
         askHelpImage.setOnClickListener(new View.OnClickListener() {
@@ -123,6 +129,16 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
+    }
+
+    private void displayNotification() {
+        Notification notification = new NotificationCompat.Builder(this)
+                .setContentText("sample")
+                .setContentTitle(getString(R.string.app_name))
+                .setSmallIcon(R.drawable.ic_notif_alert)
+//                .setOngoing(true)
+                .build();
+        NotificationManagerCompat.from(this).notify(HELP_ME, notification);
     }
 
     private void saveContactNumber(String contactNumber) {
