@@ -26,9 +26,11 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-public class MainActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     public static final String CONTACT_NUMBER = "com.tigcal.helpme.contact_mobile_number";
 
     private static final String TAG = "MainActivity";
@@ -37,11 +39,14 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     private static final int SELECT_CONTACT = 0;
     private static final int HELP_ME = 1;
 
+    private boolean requestingLocationUpdate = true;
+
     private SharedPreferences mPreferences;
     private EditText mContactNumberText;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastKnownLocation;
     private BroadcastReceiver mReceiver;
+    private LocationRequest mLocationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +151,14 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(mGoogleApiClient.isConnected() && requestingLocationUpdate) {
+            startLocationUpdates();
+        }
+    }
+
     private synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -229,13 +242,30 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     public void onConnected(Bundle bundle) {
         Log.d(TAG, "onConnected(): Successfully connected to Google API client");
         mLastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        Log.d(TAG, mLastKnownLocation.getLatitude() + "," + mLastKnownLocation.getLongitude());
+
         if (mPreferences != null) {
-            mPreferences.edit()
-                    .putLong(SendSmsService.LOCATION_LATITUDE, Double.doubleToLongBits(mLastKnownLocation.getLatitude()))
-                    .putLong(SendSmsService.LOCATION_LONGITUDE, Double.doubleToLongBits(mLastKnownLocation.getLongitude()))
-                    .commit();
+            saveLocation(mLastKnownLocation);
         }
+
+        createLocationRequest();
+        if(requestingLocationUpdate) {
+            startLocationUpdates();
+        }
+    }
+
+    private void startLocationUpdates() {
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+    }
+
+    private void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+    }
+
+    private void saveLocation(Location location) {
+        mPreferences.edit()
+                .putLong(SendSmsService.LOCATION_LATITUDE, Double.doubleToLongBits(location.getLatitude()))
+                .putLong(SendSmsService.LOCATION_LONGITUDE, Double.doubleToLongBits(location.getLongitude()))
+                .commit();
     }
 
     @Override
@@ -247,5 +277,19 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.e(TAG, "onConnectionFailed(): Failed to connect, with result: " + connectionResult);
     }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mLastKnownLocation = location;
+        saveLocation(location);
+    }
+
+    private void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(30000);
+        mLocationRequest.setFastestInterval(10000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
 
 }
