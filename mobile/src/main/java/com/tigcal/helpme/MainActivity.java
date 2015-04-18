@@ -28,8 +28,10 @@ import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    private static final String CONTACT_NUMBER = "contact_mobile_number";
-    public static final String SEND_MESSAGE = "send_message";
+    private static final String CONTACT_NUMBER = "com.tigcal.helpme.contact_mobile_number";
+    public static final String SEND_MESSAGE = "com.tigcal.helpme.send_message";
+    public static final String NOTIFICATION_EXTRA = "com.tigcal.helpme.notification_extra";
+
     private static final int SELECT_CONTACT = 0;
     private static final int HELP_ME = 1;
 
@@ -155,6 +157,17 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 R.drawable.ic_notif_alert, "Configure on Phone", pendingIntent)
                 .build();
 
+
+        Intent turnOffIntent = new Intent(this, NotificationActivity.class);
+        turnOffIntent.putExtra(NOTIFICATION_EXTRA, HELP_ME);
+        configureIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        PendingIntent turnOfPendingIntent = PendingIntent.getActivity(this, 0, turnOffIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Action turnOffAction = new NotificationCompat.Action.Builder(
+                R.drawable.ic_notif_alert, "Turn Off", turnOfPendingIntent)
+                .build();
+
         Notification notification = new NotificationCompat.Builder(this)
                 .setContentText(getString(R.string.label_ask_help))
                 .setContentTitle(getString(R.string.app_name))
@@ -162,7 +175,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 //                .setContentIntent(pendingIntent)
 //                .setOngoing(true)
                 .addAction(configureAction)
-                        //                .addAction()//TODO close
+                .addAction(turnOffAction)
                 .extend(new NotificationCompat.WearableExtender()
                                 .addAction(wearableConfigureAction)
                 )
