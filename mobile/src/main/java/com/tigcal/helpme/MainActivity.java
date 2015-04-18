@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -169,11 +170,11 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Log.d(getString(R.string.app_name), "onConnectionSuspended:" + i);
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
+        Log.d(getString(R.string.app_name), "onConnectionFailed");
     }
 }
