@@ -15,7 +15,6 @@ import android.provider.ContactsContract;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.ActionBarActivity;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,9 +30,8 @@ import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
+    private static final String SEND_MESSAGE = "com.tigcal.helpme.send_message";
     private static final String CONTACT_NUMBER = "com.tigcal.helpme.contact_mobile_number";
-    public static final String SEND_MESSAGE = "com.tigcal.helpme.send_message";
-
     private static final int SELECT_CONTACT = 0;
     private static final int HELP_ME = 1;
 
@@ -128,7 +126,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if(SEND_MESSAGE.equals(intent.getAction())) {
+                if (SEND_MESSAGE.equals(intent.getAction())) {
                     sendHelpMessage(mContactNumberText.getText().toString());
                 }
             }
@@ -141,7 +139,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         super.onStop();
         mGoogleApiClient.disconnect();
 
-        if(mReceiver != null) {
+        if (mReceiver != null) {
             unregisterReceiver(mReceiver);
         }
     }
@@ -222,21 +220,13 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     }
 
     private void sendHelpMessage(String contactNumber) {
-        //TODO check if sent via pending intent
-
-        StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder.append("Please help me! I am in an emergency! ");//TODO strings.xml
-
+        Intent intent = new Intent(this, SendSmsService.class);
+        intent.putExtra(SendSmsService.MOBILE_NUMBER, contactNumber);
         if (mLastKnownLocation != null) {
-            messageBuilder.append("My last location is near the following GPS coordinates: ");//TODO strings.xml
-            messageBuilder.append(String.valueOf(mLastKnownLocation.getLatitude()));
-            messageBuilder.append(",");
-            messageBuilder.append(String.valueOf(mLastKnownLocation.getLongitude()));
+            intent.putExtra(SendSmsService.LOCATION_LATITUDE, mLastKnownLocation.getLatitude());
+            intent.putExtra(SendSmsService.LOCATION_LONGITUDE, mLastKnownLocation.getLongitude());
         }
-
-        SmsManager smsManager = SmsManager.getDefault();
-        smsManager.sendTextMessage(contactNumber, null, messageBuilder.toString(), null, null);
-        Toast.makeText(this, "You have asked for help from " + contactNumber, Toast.LENGTH_SHORT).show();
+        startService(intent);
     }
 
     @Override
