@@ -14,4 +14,6 @@
     <string name="label_get_contact">Get Contact from Contacts</string>
     <string name="label_save_contact">Save Contact Number</string>
 
+    <string name="message_invalid_contact_number">Please provide a valid contact number</string>
+
 </resources>
