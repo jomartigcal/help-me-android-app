@@ -1,7 +1,7 @@
 package com.tigcal.helpme;
 
 import android.app.Notification;
-import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -29,6 +29,7 @@ import com.google.android.gms.location.LocationServices;
 public class MainActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String CONTACT_NUMBER = "contact_mobile_number";
+    public static final String SEND_MESSAGE = "send_message";
     private static final int SELECT_CONTACT = 0;
     private static final int HELP_ME = 1;
 
@@ -45,7 +46,6 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         mPreferences = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
 
         buildGoogleApiClient();
-        displayNotification();
 
         ImageView askHelpImage = (ImageView) findViewById(R.id.image_ask_help);
         askHelpImage.setOnClickListener(new View.OnClickListener() {
@@ -77,6 +77,8 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 }
             }
         });
+
+        displayNotification();
     }
 
     @Override
@@ -123,6 +125,14 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         mGoogleApiClient.disconnect();
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if(getIntent().hasExtra(SEND_MESSAGE)) {
+            sendHelpMessage(mContactNumberText.getText().toString());
+        }
+    }
+
     private synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -132,10 +142,16 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     }
 
     private void displayNotification() {
+        Intent askHelpIntent = new Intent(this, MainActivity.class);
+        askHelpIntent.putExtra(SEND_MESSAGE, true);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, askHelpIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         Notification notification = new NotificationCompat.Builder(this)
                 .setContentText("sample")
                 .setContentTitle(getString(R.string.app_name))
                 .setSmallIcon(R.drawable.ic_notif_alert)
+                .setContentIntent(pendingIntent)
 //                .setOngoing(true)
                 .build();
         NotificationManagerCompat.from(this).notify(HELP_ME, notification);
@@ -177,6 +193,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 
         SmsManager smsManager = SmsManager.getDefault();
         smsManager.sendTextMessage(contactNumber, null, messageBuilder.toString(), null, null);
+        Toast.makeText(this, "You have asked for help from " + contactNumber, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -193,4 +210,5 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d(getString(R.string.app_name), "onConnectionFailed");
     }
+
 }
