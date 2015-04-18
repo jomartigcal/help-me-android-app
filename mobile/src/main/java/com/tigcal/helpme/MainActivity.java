@@ -140,18 +140,10 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     protected void onStop() {
         super.onStop();
         mGoogleApiClient.disconnect();
-        
+
         if(mReceiver != null) {
             unregisterReceiver(mReceiver);
         }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-//        if(getIntent().hasExtra(SEND_MESSAGE)) {
-//            sendHelpMessage(mContactNumberText.getText().toString());
-//        }
     }
 
     private synchronized void buildGoogleApiClient() {
@@ -230,7 +222,6 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     }
 
     private void sendHelpMessage(String contactNumber) {
-        //TODO add location
         //TODO check if sent via pending intent
 
         StringBuilder messageBuilder = new StringBuilder();
