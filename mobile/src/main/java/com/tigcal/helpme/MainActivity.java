@@ -181,6 +181,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 R.drawable.ic_notif_alert, "Configure on Phone", pendingIntent)
                 .build();
 
+        Intent turnOffIntent = new Intent(this, Receiver.class);//"turn off");//new Intent(this, MainActivity.class);
         Intent turnOffIntent = new Intent(this, NotificationActivity.class);
         turnOffIntent.putExtra(NotificationActivity.NOTIFICATION_EXTRA, HELP_ME);
         configureIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -194,7 +195,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 .setContentTitle(getString(R.string.app_name))
                 .setSmallIcon(R.drawable.ic_notif_alert)
                 .setContentIntent(sendMessagePendingIntent)
-//                .setOngoing(true)
+                .setOngoing(true)
                 .addAction(configureAction)
                 .addAction(turnOffAction)
                 .extend(new NotificationCompat.WearableExtender()
@@ -291,5 +292,12 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+    public static class Receiver extends BroadcastReceiver {
 
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            NotificationManagerCompat.from(context).cancel(HELP_ME);
+            //stopLocationUpdates();
+        }
+    }
 }
