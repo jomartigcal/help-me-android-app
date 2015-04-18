@@ -221,7 +221,12 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     }
 
     private void askForHelp() {
-        sendHelpMessage(mContactNumberText.getText().toString());
+        String contactNumber = mContactNumberText.getText().toString();
+        if (contactNumber == null || "".equals(contactNumber)) {
+            sendHelpMessage(contactNumber);
+        } else {
+            displayInvalidNumberMessage();
+        }
     }
 
     private void sendHelpMessage(String contactNumber) {
