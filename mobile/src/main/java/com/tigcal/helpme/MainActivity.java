@@ -29,9 +29,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    public static final String CONTACT_NUMBER = "com.tigcal.helpme.contact_mobile_number";
+
     private static final String TAG = "MainActivity";
     private static final String SEND_MESSAGE = "com.tigcal.helpme.send_message";
-    private static final String CONTACT_NUMBER = "com.tigcal.helpme.contact_mobile_number";
+
     private static final int SELECT_CONTACT = 0;
     private static final int HELP_ME = 1;
 
@@ -220,19 +222,27 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     }
 
     private void sendHelpMessage(String contactNumber) {
-        Intent intent = new Intent(this, SendSmsService.class);
-        intent.putExtra(SendSmsService.MOBILE_NUMBER, contactNumber);
-        if (mLastKnownLocation != null) {
-            intent.putExtra(SendSmsService.LOCATION_LATITUDE, mLastKnownLocation.getLatitude());
-            intent.putExtra(SendSmsService.LOCATION_LONGITUDE, mLastKnownLocation.getLongitude());
-        }
-        startService(intent);
+        //TODO remove contact parameter
+//        Intent intent = new Intent(this, SendSmsService.class);
+//        intent.putExtra(CONTACT_NUMBER, contactNumber);
+//        if (mLastKnownLocation != null) {
+//            intent.putExtra(SendSmsService.LOCATION_LATITUDE, mLastKnownLocation.getLatitude());
+//            intent.putExtra(SendSmsService.LOCATION_LONGITUDE, mLastKnownLocation.getLongitude());
+//        }
+        startService(new Intent(this, SendSmsService.class));
     }
 
     @Override
     public void onConnected(Bundle bundle) {
         Log.d(TAG, "onConnected(): Successfully connected to Google API client");
         mLastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+      
+        if(mPreferences != null) {
+            mPreferences.edit()
+                    .putLong(SendSmsService.LOCATION_LATITUDE, Double.doubleToLongBits(mLastKnownLocation.getLatitude()))
+                    .putLong(SendSmsService.LOCATION_LONGITUDE, Double.doubleToLongBits(mLastKnownLocation.getLongitude()))
+                    .commit();
+        }
     }
 
     @Override

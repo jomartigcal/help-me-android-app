@@ -12,10 +12,7 @@ public class DataLayerListener extends WearableListenerService {
     public void onMessageReceived(MessageEvent messageEvent) {
         super.onMessageReceived(messageEvent);
         if(WEARABLE_MESSAGE.equals(messageEvent.getPath())) {
-            Intent intent = new Intent(this, SendSmsService.class);
-            intent.putExtra(SendSmsService.MOBILE_NUMBER, "//DUMMY");
-
-            startService(intent);
+            startService(new Intent(this, SendSmsService.class));
         }
     }
 }
