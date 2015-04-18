@@ -3,6 +3,7 @@ package com.tigcal.helpme;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -16,13 +17,19 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class MainActivity extends ActionBarActivity {
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+
+public class MainActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String CONTACT_NUMBER = "contact_mobile_number";
     private static final int SELECT_CONTACT = 0;
 
     private SharedPreferences mPreferences;
     private EditText mContactNumberText;
+    private GoogleApiClient mGoogleApiClient;
+    private Location mLastKnownLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +37,8 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         mPreferences = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
+
+        buildGoogleApiClient();
 
         ImageView askHelpImage = (ImageView) findViewById(R.id.image_ask_help);
         askHelpImage.setOnClickListener(new View.OnClickListener() {
@@ -84,15 +93,35 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == SELECT_CONTACT && resultCode == RESULT_OK) {
+        if (requestCode == SELECT_CONTACT && resultCode == RESULT_OK) {
             Uri contactUri = data.getData();
-            String[] projection = new String[] {ContactsContract.CommonDataKinds.Phone.NUMBER};
+            String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER};
             Cursor cursor = getContentResolver().query(contactUri, projection, null, null, null);
-            if(cursor != null && cursor.moveToFirst()) {
+            if (cursor != null && cursor.moveToFirst()) {
                 int index = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
                 mContactNumberText.setText(cursor.getString(index));
             }
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mGoogleApiClient.disconnect();
+    }
+
+    private synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
     }
 
     private void saveContactNumber(String contactNumber) {
@@ -116,10 +145,35 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void sendHelpMessage(String contactNumber) {
-        SmsManager smsManager = SmsManager.getDefault();
         //TODO add location
         //TODO check if sent via pending intent
 
-        smsManager.sendTextMessage(contactNumber, null, "Hello! I need help!", null, null);
+        StringBuilder messageBuilder = new StringBuilder();
+        messageBuilder.append("Please help me! I am in an emergency! ");//TODO strings.xml
+
+        if (mLastKnownLocation != null) {
+            messageBuilder.append("My last location is near the following GPS coordinates: ");//TODO strings.xml
+            messageBuilder.append(String.valueOf(mLastKnownLocation.getLatitude()));
+            messageBuilder.append(",");
+            messageBuilder.append(String.valueOf(mLastKnownLocation.getLongitude()));
+        }
+
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendTextMessage(contactNumber, null, messageBuilder.toString(), null, null);
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        mLastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 }
