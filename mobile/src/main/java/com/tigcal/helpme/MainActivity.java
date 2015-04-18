@@ -222,13 +222,6 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     }
 
     private void sendHelpMessage(String contactNumber) {
-        //TODO remove contact parameter
-//        Intent intent = new Intent(this, SendSmsService.class);
-//        intent.putExtra(CONTACT_NUMBER, contactNumber);
-//        if (mLastKnownLocation != null) {
-//            intent.putExtra(SendSmsService.LOCATION_LATITUDE, mLastKnownLocation.getLatitude());
-//            intent.putExtra(SendSmsService.LOCATION_LONGITUDE, mLastKnownLocation.getLongitude());
-//        }
         startService(new Intent(this, SendSmsService.class));
     }
 
@@ -236,8 +229,8 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     public void onConnected(Bundle bundle) {
         Log.d(TAG, "onConnected(): Successfully connected to Google API client");
         mLastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-      
-        if(mPreferences != null) {
+        Log.d(TAG, mLastKnownLocation.getLatitude() + "," + mLastKnownLocation.getLongitude());
+        if (mPreferences != null) {
             mPreferences.edit()
                     .putLong(SendSmsService.LOCATION_LATITUDE, Double.doubleToLongBits(mLastKnownLocation.getLatitude()))
                     .putLong(SendSmsService.LOCATION_LONGITUDE, Double.doubleToLongBits(mLastKnownLocation.getLongitude()))

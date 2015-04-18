@@ -11,7 +11,6 @@ import android.widget.Toast;
 public class SendSmsService extends IntentService {
     public static final String LOCATION_LATITUDE = "com.tigcal.helpme.location.latitude";
     public static final String LOCATION_LONGITUDE = "com.tigcal.helpme.location.longitude";
-//    public static final String MOBILE_NUMBER = "com.tigcal.helpme.mobilenumber";
 
     public SendSmsService() {
         super("SendSmsService");

@@ -11,7 +11,7 @@ public class DataLayerListener extends WearableListenerService {
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
         super.onMessageReceived(messageEvent);
-        if(WEARABLE_MESSAGE.equals(messageEvent.getPath())) {
+        if (WEARABLE_MESSAGE.equals(messageEvent.getPath())) {
             startService(new Intent(this, SendSmsService.class));
         }
     }
