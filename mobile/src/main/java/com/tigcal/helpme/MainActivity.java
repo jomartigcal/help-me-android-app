@@ -206,13 +206,18 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         }
 
         mPreferences.edit()
-                .putString("contact_mobile_number", contactNumber)
+                .putString(CONTACT_NUMBER, contactNumber)
                 .commit();
+        displayMessage("The mobile number " + contactNumber + " has been saved.");
 
     }
 
     private void displayInvalidNumberMessage() {
-        Toast.makeText(this, getString(R.string.message_invalid_contact_number), Toast.LENGTH_SHORT).show();
+        displayMessage(getString(R.string.message_invalid_contact_number));
+    }
+
+    private void displayMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     private void askForHelp() {
