@@ -76,14 +76,14 @@ public class HelpMeWearActivity extends Activity implements GoogleApiClient.Conn
                 for (int i = 0; i < nodes.size(); i++) {
                     Wearable.MessageApi.sendMessage(mGoogleApiClient, nodes.get(i).getId(), HANDHELD_PATH, null);
                 }
-                if(!nodes.isEmpty()) {
-                    Intent intent = new Intent(HelpMeWearActivity.this, ConfirmationActivity.class);
-                    intent.putExtra(ConfirmationActivity.EXTRA_MESSAGE, getString(R.string.message_sms_sent));
-                    intent.putExtra(ConfirmationActivity.EXTRA_ANIMATION_TYPE, ConfirmationActivity.SUCCESS_ANIMATION);
-                    startActivity(intent);
-                }
             }
         });
+
+        Intent intent = new Intent(HelpMeWearActivity.this, ConfirmationActivity.class);
+        intent.putExtra(ConfirmationActivity.EXTRA_MESSAGE, getString(R.string.message_sms_sent));
+        intent.putExtra(ConfirmationActivity.EXTRA_ANIMATION_TYPE, ConfirmationActivity.SUCCESS_ANIMATION);
+        startActivity(intent);
+
     }
 
     @Override
