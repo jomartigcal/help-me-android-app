@@ -260,6 +260,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     }
 
     private void sendHelpMessage(String contactNumber) {
+        displayNotification();
         sendMessages = true;
         startService(new Intent(this, SendSmsService.class));
     }
