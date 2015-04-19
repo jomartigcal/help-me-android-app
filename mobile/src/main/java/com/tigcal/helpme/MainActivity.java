@@ -345,7 +345,9 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     public void onLocationChanged(Location location) {
         mLastKnownLocation = location;
         saveLocation(location);
-        startService(new Intent(this, SendSmsService.class));
+        if(requestingLocationUpdate && sendMessages) {
+            startService(new Intent(this, SendSmsService.class));
+        }
     }
 
     private void createLocationRequest() {
