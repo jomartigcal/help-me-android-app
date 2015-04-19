@@ -307,8 +307,16 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                     Log.d("test", placeLikelihood.getPlace().getName() + ""
                                     + placeLikelihood.getLikelihood()
                     );
-                    nearbyLocationBuilder.append(placeLikelihood.getPlace().getName());
                 }
+
+                if(placeLikelihoods.getCount() > 1) {
+                    nearbyLocationBuilder.append(placeLikelihoods.get(0).getPlace().getName());
+                } else if(placeLikelihoods.getCount() > 2)
+                    nearbyLocationBuilder.append(placeLikelihoods.get(0).getPlace().getName() + " and "
+                    + placeLikelihoods.get(1).getPlace().getName());
+
+
+
                 mPreferences.edit()
                         .putString(SendSmsService.LOCATION_NEARBY, nearbyLocationBuilder.toString())
                         .commit();
