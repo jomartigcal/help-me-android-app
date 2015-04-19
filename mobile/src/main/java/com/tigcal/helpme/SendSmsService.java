@@ -44,13 +44,14 @@ public class SendSmsService extends IntentService {
     private void sendHelpRequestMessage(String contactNumber, double latitude, double longitude, String nearbyLocation) {
         StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append(getString(R.string.message_help_me));
+        messageBuilder.append(" ");
 
         if (latitude != 0 && longitude != 0) {
             messageBuilder.append(String.format(getString(R.string.message_location), String.valueOf(latitude), String.valueOf(longitude)));
         }
 
         if(!"".equals(nearbyLocation)) {
-            messageBuilder.append("( near ");
+            messageBuilder.append(" (near ");
             messageBuilder.append(nearbyLocation);
             messageBuilder.append(")");
         }
