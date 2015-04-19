@@ -305,12 +305,6 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
             @Override
             public void onResult(PlaceLikelihoodBuffer placeLikelihoods) {
-                for (PlaceLikelihood placeLikelihood : placeLikelihoods) {
-                    Log.d("test", placeLikelihood.getPlace().getName() + ""
-                                    + placeLikelihood.getLikelihood()
-                    );
-                }
-
                 if (placeLikelihoods.getCount() > 1) {
                     nearbyLocationBuilder.append(placeLikelihoods.get(0).getPlace().getName());
                 } else if (placeLikelihoods.getCount() > 2)
