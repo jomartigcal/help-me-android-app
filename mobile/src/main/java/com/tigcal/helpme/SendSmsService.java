@@ -10,6 +10,8 @@ import android.widget.Toast;
 public class SendSmsService extends IntentService {
     public static final String LOCATION_LATITUDE = "com.tigcal.helpme.location.latitude";
     public static final String LOCATION_LONGITUDE = "com.tigcal.helpme.location.longitude";
+    public static final String LOCATION_NEARBY = "com.tigcal.helpme.location.nearby";
+
     public static final String MESSAGE = "com.tigcal.helpme.sms";
 
     public SendSmsService() {
@@ -24,11 +26,12 @@ public class SendSmsService extends IntentService {
             String contactNumber = preferences.getString(MainActivity.CONTACT_NUMBER, null);
             double latitude = Double.longBitsToDouble(preferences.getLong(LOCATION_LATITUDE, 0));
             double longitude = Double.longBitsToDouble(preferences.getLong(LOCATION_LONGITUDE, 0));
+            String nearbyLocation = preferences.getString(LOCATION_NEARBY, "");
 
             if (intent.hasExtra(MESSAGE)) {
                 sendMessage(contactNumber, intent.getStringExtra(MESSAGE));
             } else {
-                sendHelpRequestMessage(contactNumber, latitude, longitude);
+                sendHelpRequestMessage(contactNumber, latitude, longitude, nearbyLocation);
             }
         }
     }
@@ -38,12 +41,18 @@ public class SendSmsService extends IntentService {
         smsManager.sendTextMessage(contactNumber, null, message, null, null);
     }
 
-    private void sendHelpRequestMessage(String contactNumber, double latitude, double longitude) {
+    private void sendHelpRequestMessage(String contactNumber, double latitude, double longitude, String nearbyLocation) {
         StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append(getString(R.string.message_help_me));
 
         if (latitude != 0 && longitude != 0) {
             messageBuilder.append(String.format(getString(R.string.message_location), String.valueOf(latitude), String.valueOf(longitude)));
+        }
+
+        if(!"".equals(nearbyLocation)) {
+            messageBuilder.append("( near ");
+            messageBuilder.append(nearbyLocation);
+            messageBuilder.append(")");
         }
 
         if (contactNumber != null) {

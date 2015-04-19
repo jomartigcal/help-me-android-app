@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
@@ -26,9 +25,15 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.PlaceDetectionApi;
+import com.google.android.gms.location.places.PlaceLikelihood;
+import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
+import com.google.android.gms.location.places.Places;
 
 public class MainActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     public static final String CONTACT_NUMBER = "com.tigcal.helpme.contact_mobile_number";
@@ -87,15 +92,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 askForHelp();
             }
         });
-//
-//        if(getIntent().hasExtra(NotificationActivity.NOTIFICATION_EXTRA)) {
-//            displayMessage("turn off");
-//            int notificationId = getIntent().getIntExtra(NotificationActivity.NOTIFICATION_EXTRA, 0);
-//            NotificationManagerCompat.from(this).cancel(notificationId);
-//            stopLocationUpdates();
-//        } else {
-            displayNotification();
-//        }
+
         Button safeButton = (Button) findViewById(R.id.button_safe);
         safeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,6 +101,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
             }
         });
 
+        displayNotification();
     }
 
     @Override
@@ -143,20 +141,20 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         super.onStart();
         mGoogleApiClient.connect();
 
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("turn off");
-        mReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if("turn off".equals(intent.getAction())) {
-                    displayMessage("turn off");
-                    int notificationId = getIntent().getIntExtra(NotificationActivity.NOTIFICATION_EXTRA, 0);
-                    NotificationManagerCompat.from(MainActivity.this).cancel(notificationId);
-                    stopLocationUpdates();
-                }
-            }
-        };
-        registerReceiver(mReceiver, intentFilter);
+//        IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction("turn off");
+//        mReceiver = new BroadcastReceiver() {
+//            @Override
+//            public void onReceive(Context context, Intent intent) {
+//                if("turn off".equals(intent.getAction())) {
+//                    displayMessage("turn off");
+//                    int notificationId = getIntent().getIntExtra(NotificationActivity.NOTIFICATION_EXTRA, 0);
+//                    NotificationManagerCompat.from(MainActivity.this).cancel(notificationId);
+//                    stopLocationUpdates();
+//                }
+//            }
+//        };
+//        registerReceiver(mReceiver, intentFilter);
     }
 
     @Override
@@ -180,6 +178,8 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     private synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
@@ -199,16 +199,16 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 R.drawable.ic_configure, "Configure on Phone", pendingIntent)
                 .build();
 
-        Intent turnOffIntent = new Intent(this, Receiver.class);//"turn off");//new Intent(this, MainActivity.class);
-//        turnOffIntent.putExtra(NotificationActivity.NOTIFICATION_EXTRA, HELP_ME);
-//        configureIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent turnOfPendingIntent = PendingIntent.getActivity(this, 0, turnOffIntent, 0);//PendingIntent.FLAG_UPDATE_CURRENT);
+//        Intent turnOffIntent = new Intent(this, Receiver.class);//"turn off");//new Intent(this, MainActivity.class);
+////        turnOffIntent.putExtra(NotificationActivity.NOTIFICATION_EXTRA, HELP_ME);
+////        configureIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        PendingIntent turnOfPendingIntent = PendingIntent.getActivity(this, 0, turnOffIntent, 0);//PendingIntent.FLAG_UPDATE_CURRENT);
 
-        PendingIntent pi = PendingIntent.getBroadcast(this, 0,turnOffIntent, 0);
+//        PendingIntent pi = PendingIntent.getBroadcast(this, 0,turnOffIntent, 0);
 
-        NotificationCompat.Action turnOffAction = new NotificationCompat.Action.Builder(
-                R.drawable.ic_turn_off, "Turn Off", pi)
-                .build();
+//        NotificationCompat.Action turnOffAction = new NotificationCompat.Action.Builder(
+//                R.drawable.ic_turn_off, "Turn Off", pi)
+//                .build();
 
         Notification notification = new NotificationCompat.Builder(this)
                 .setContentText(getString(R.string.label_ask_help))
@@ -218,7 +218,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 .setOngoing(true)
 //                .setDeleteIntent()
                 .addAction(configureAction)
-                .addAction(turnOffAction)
+//                .addAction(turnOffAction)
                 .extend(new NotificationCompat.WearableExtender()
                                 .addAction(wearableConfigureAction)
                 )
@@ -248,6 +248,9 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     }
 
     private void askForHelp() {
+        sendMessages = true;
+        requestingLocationUpdate = true;
+
         String contactNumber = mContactNumberText.getText().toString();
         if (contactNumber == null || "".equals(contactNumber)) {
             displayInvalidNumberMessage();
@@ -293,10 +296,31 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     }
 
     private void saveLocation(Location location) {
+        final StringBuilder nearbyLocationBuilder = new StringBuilder();
+
+        PendingResult<PlaceLikelihoodBuffer> result =
+            Places.PlaceDetectionApi.getCurrentPlace(mGoogleApiClient, null);
+        result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+            @Override
+            public void onResult(PlaceLikelihoodBuffer placeLikelihoods) {
+                for (PlaceLikelihood placeLikelihood : placeLikelihoods) {
+                    Log.d("test", placeLikelihood.getPlace().getName() + ""
+                                    + placeLikelihood.getLikelihood()
+                    );
+                    nearbyLocationBuilder.append(placeLikelihood.getPlace().getName());
+                }
+                mPreferences.edit()
+                        .putString(SendSmsService.LOCATION_NEARBY, nearbyLocationBuilder.toString())
+                        .commit();
+                placeLikelihoods.release();
+            }
+        });
+
         mPreferences.edit()
                 .putLong(SendSmsService.LOCATION_LATITUDE, Double.doubleToLongBits(location.getLatitude()))
                 .putLong(SendSmsService.LOCATION_LONGITUDE, Double.doubleToLongBits(location.getLongitude()))
                 .commit();
+
     }
 
     @Override
