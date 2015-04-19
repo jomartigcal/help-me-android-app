@@ -294,7 +294,11 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         intent.putExtra(SendSmsService.MESSAGE, getString(R.string.message_safe));
         startService(intent);
         //TODO check
-        displayMessage(getString(R.string.message_safe_acknowledgement));
+        if (mPreferences.contains(CONTACT_NUMBER)) {
+            displayMessage(getString(R.string.message_safe_acknowledgement));
+        } else {
+            displayInvalidNumberMessage();
+        }
     }
 
     private void saveLocation(Location location) {
