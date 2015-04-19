@@ -37,8 +37,10 @@ public class SendSmsService extends IntentService {
     }
 
     private void sendMessage(String contactNumber, String message) {
-        SmsManager smsManager = SmsManager.getDefault();
-        smsManager.sendTextMessage(contactNumber, null, message, null, null);
+        if(contactNumber != null && !"".equals(contactNumber)) {
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(contactNumber, null, message, null, null);
+        }
     }
 
     private void sendHelpRequestMessage(String contactNumber, double latitude, double longitude, String nearbyLocation) {
