@@ -170,7 +170,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     @Override
     protected void onResume() {
         super.onResume();
-        if(mGoogleApiClient.isConnected() && requestingLocationUpdate) {
+        if (mGoogleApiClient.isConnected() && requestingLocationUpdate) {
             startLocationUpdates();
         }
     }
@@ -274,7 +274,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         }
 
         createLocationRequest();
-        if(requestingLocationUpdate) {
+        if (requestingLocationUpdate) {
             startLocationUpdates();
         }
     }
@@ -284,6 +284,8 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     }
 
     private void stopLocationUpdates() {
+        NotificationManagerCompat.from(this).cancel(HELP_ME);
+
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         sendMessages = false;
         requestingLocationUpdate = false;
@@ -299,7 +301,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         final StringBuilder nearbyLocationBuilder = new StringBuilder();
 
         PendingResult<PlaceLikelihoodBuffer> result =
-            Places.PlaceDetectionApi.getCurrentPlace(mGoogleApiClient, null);
+                Places.PlaceDetectionApi.getCurrentPlace(mGoogleApiClient, null);
         result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
             @Override
             public void onResult(PlaceLikelihoodBuffer placeLikelihoods) {
@@ -309,12 +311,11 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                     );
                 }
 
-                if(placeLikelihoods.getCount() > 1) {
+                if (placeLikelihoods.getCount() > 1) {
                     nearbyLocationBuilder.append(placeLikelihoods.get(0).getPlace().getName());
-                } else if(placeLikelihoods.getCount() > 2)
+                } else if (placeLikelihoods.getCount() > 2)
                     nearbyLocationBuilder.append(placeLikelihoods.get(0).getPlace().getName() + " and "
-                    + placeLikelihoods.get(1).getPlace().getName());
-
+                            + placeLikelihoods.get(1).getPlace().getName());
 
 
                 mPreferences.edit()
