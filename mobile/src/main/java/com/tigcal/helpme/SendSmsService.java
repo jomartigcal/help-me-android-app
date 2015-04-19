@@ -2,7 +2,6 @@ package com.tigcal.helpme;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.telephony.SmsManager;
@@ -11,6 +10,7 @@ import android.widget.Toast;
 public class SendSmsService extends IntentService {
     public static final String LOCATION_LATITUDE = "com.tigcal.helpme.location.latitude";
     public static final String LOCATION_LONGITUDE = "com.tigcal.helpme.location.longitude";
+    public static final String MESSAGE = "com.tigcal.helpme.sms";
 
     public SendSmsService() {
         super("SendSmsService");
@@ -25,21 +25,29 @@ public class SendSmsService extends IntentService {
             double latitude = Double.longBitsToDouble(preferences.getLong(LOCATION_LATITUDE, 0));
             double longitude = Double.longBitsToDouble(preferences.getLong(LOCATION_LONGITUDE, 0));
 
-            sendMessage(contactNumber, latitude, longitude);
+            if (intent.hasExtra(MESSAGE)) {
+                sendMessage(contactNumber, intent.getStringExtra(MESSAGE));
+            } else {
+                sendHelpRequestMessage(contactNumber, latitude, longitude);
+            }
         }
     }
 
-    private void sendMessage(String contactNumber, double latitude, double longitude) {
+    private void sendMessage(String contactNumber, String message) {
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendTextMessage(contactNumber, null, message, null, null);
+    }
+
+    private void sendHelpRequestMessage(String contactNumber, double latitude, double longitude) {
         StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder.append("Please help me! I am in an emergency! ");//TODO strings.xml
+        messageBuilder.append(getString(R.string.message_help_me));
 
         if (latitude != 0 && longitude != 0) {
             messageBuilder.append(String.format(getString(R.string.message_location), String.valueOf(latitude), String.valueOf(longitude)));
         }
 
         if (contactNumber != null) {
-            SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(contactNumber, null, messageBuilder.toString(), null, null);
+            sendMessage(contactNumber, messageBuilder.toString());
             displaySmsSentMessage(contactNumber);
         }
     }

@@ -34,7 +34,6 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     public static final String CONTACT_NUMBER = "com.tigcal.helpme.contact_mobile_number";
 
     private static final String TAG = "MainActivity";
-    private static final String SEND_MESSAGE = "com.tigcal.helpme.send_message";
 
     private static final int SELECT_CONTACT = 0;
     private static final int HELP_ME = 1;
@@ -97,6 +96,14 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 //        } else {
             displayNotification();
 //        }
+        Button safeButton = (Button) findViewById(R.id.button_safe);
+        safeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopLocationUpdates();
+            }
+        });
+
     }
 
     @Override
@@ -277,6 +284,12 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         sendMessages = false;
         requestingLocationUpdate = false;
+
+        Intent intent = new Intent(this, SendSmsService.class);
+        intent.putExtra(SendSmsService.MESSAGE, getString(R.string.message_safe));
+        startService(intent);
+        //TODO check
+        displayMessage(getString(R.string.message_safe_acknowledgement));
     }
 
     private void saveLocation(Location location) {
@@ -305,7 +318,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 
     private void createLocationRequest() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(30000);
+        mLocationRequest.setInterval(15000);
         mLocationRequest.setFastestInterval(10000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
