@@ -324,10 +324,12 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
             }
         });
 
-        mPreferences.edit()
-                .putLong(SendSmsService.LOCATION_LATITUDE, Double.doubleToLongBits(location.getLatitude()))
-                .putLong(SendSmsService.LOCATION_LONGITUDE, Double.doubleToLongBits(location.getLongitude()))
-                .commit();
+        if(location != null) {
+            mPreferences.edit()
+                    .putLong(SendSmsService.LOCATION_LATITUDE, Double.doubleToLongBits(location.getLatitude()))
+                    .putLong(SendSmsService.LOCATION_LONGITUDE, Double.doubleToLongBits(location.getLongitude()))
+                    .commit();
+        }
 
     }
 
