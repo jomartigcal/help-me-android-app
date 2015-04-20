@@ -30,8 +30,6 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.PlaceDetectionApi;
-import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
 
@@ -100,7 +98,9 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
             }
         });
 
-        displayNotification();
+        if (mPreferences.contains(CONTACT_NUMBER)) {
+            displayNotification();
+        }
     }
 
     @Override
@@ -216,7 +216,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 .putString(CONTACT_NUMBER, contactNumber)
                 .commit();
         displayMessage("The mobile number " + contactNumber + " has been saved.");
-
+        displayNotification();
     }
 
     private void displayNoSavedNumber() {
