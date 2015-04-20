@@ -50,7 +50,6 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     private EditText mContactNumberText;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastKnownLocation;
-    private BroadcastReceiver mReceiver;
     private LocationRequest mLocationRequest;
 
     @Override
@@ -146,10 +145,6 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     protected void onStop() {
         super.onStop();
         mGoogleApiClient.disconnect();
-
-        if (mReceiver != null) {
-            unregisterReceiver(mReceiver);
-        }
     }
 
     @Override
@@ -224,6 +219,10 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 
     }
 
+    private void displayNoSavedNumber() {
+        displayMessage(getString(R.string.message_no_saved_contact_number));
+    }
+
     private void displayInvalidNumberMessage() {
         displayMessage(getString(R.string.message_invalid_contact_number));
     }
@@ -237,10 +236,10 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         requestingLocationUpdate = true;
 
         String contactNumber = mContactNumberText.getText().toString();
-        if (contactNumber == null || "".equals(contactNumber)) {
-            displayInvalidNumberMessage();
-        } else {
+        if (mPreferences.contains(CONTACT_NUMBER)) {
             sendHelpMessage(contactNumber);
+        } else {
+            displayNoSavedNumber();
         }
     }
 
@@ -276,14 +275,13 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         sendMessages = false;
         requestingLocationUpdate = false;
 
-        Intent intent = new Intent(this, SendSmsService.class);
-        intent.putExtra(SendSmsService.MESSAGE, getString(R.string.message_safe));
-        startService(intent);
-        //TODO check
         if (mPreferences.contains(CONTACT_NUMBER)) {
             displayMessage(getString(R.string.message_safe_acknowledgement));
+            Intent intent = new Intent(this, SendSmsService.class);
+            intent.putExtra(SendSmsService.MESSAGE, getString(R.string.message_safe));
+            startService(intent);
         } else {
-            displayInvalidNumberMessage();
+            displayNoSavedNumber();
         }
     }
 
@@ -349,7 +347,6 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         @Override
         public void onReceive(Context context, Intent intent) {
             NotificationManagerCompat.from(context).cancel(HELP_ME);
-            //stopLocationUpdates();
         }
     }
 }

@@ -17,6 +17,7 @@
     <string name="label_safe">I am Safe</string>
 
     <string name="message_invalid_contact_number">Please provide a valid contact number</string>
+    <string name="message_no_saved_contact_number">Please save a valid contact number.</string>
     <string name="message_location">My last location is near the following GPS coordinates: %1$s,%2$s</string>
     <string name="message_safe">I am safe now. Thank you!</string>
     <string name="message_help_me">Please help me! I am in an emergency! </string>
