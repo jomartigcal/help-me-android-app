@@ -140,21 +140,6 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
-
-//        IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction("turn off");
-//        mReceiver = new BroadcastReceiver() {
-//            @Override
-//            public void onReceive(Context context, Intent intent) {
-//                if("turn off".equals(intent.getAction())) {
-//                    displayMessage("turn off");
-//                    int notificationId = getIntent().getIntExtra(NotificationActivity.NOTIFICATION_EXTRA, 0);
-//                    NotificationManagerCompat.from(MainActivity.this).cancel(notificationId);
-//                    stopLocationUpdates();
-//                }
-//            }
-//        };
-//        registerReceiver(mReceiver, intentFilter);
     }
 
     @Override
