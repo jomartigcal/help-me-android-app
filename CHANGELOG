@@ -1,0 +1,8 @@
+Help Me Android App
+
+1.0
+    Initial version of the app as presented to Accenture Hackathon and Tech Talks 2015
+    Displaying notification only if user has saved a contact number
+    Updating layout for landscape orientation
+    Making the sending of text manually instead of relying on Google Location Updates
+    Fixing some crashes, cleaning up code, and code refactoring
