@@ -152,6 +152,12 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         if (mGoogleApiClient.isConnected() && requestingLocationUpdate) {
