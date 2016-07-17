@@ -28,8 +28,8 @@ android {
 }
 
 ext {
-    supportLibraryVersion = '23.2.1'
-    playServicesVersion = '7.5.0'
+    supportLibraryVersion = '23.4.0'
+    playServicesVersion = '9.2.1'
 }
 
 dependencies {
@@ -38,5 +38,6 @@ dependencies {
 
     compile "com.android.support:appcompat-v7:${supportLibraryVersion}"
     compile "com.google.android.gms:play-services-location:${playServicesVersion}"
+    compile "com.google.android.gms:play-services-places:${playServicesVersion}"
     compile "com.google.android.gms:play-services-wearable:${playServicesVersion}"
 }
