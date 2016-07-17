@@ -7,7 +7,7 @@ def versionBuild = 0
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "com.tigcal.helpme"
@@ -40,4 +40,9 @@ dependencies {
     compile "com.google.android.gms:play-services-location:${playServicesVersion}"
     compile "com.google.android.gms:play-services-places:${playServicesVersion}"
     compile "com.google.android.gms:play-services-wearable:${playServicesVersion}"
+
+    compile 'com.google.firebase:firebase-core:9.2.1'
+    compile 'com.google.firebase:firebase-crash:9.2.1'
 }
+
+apply plugin: 'com.google.gms.google-services'

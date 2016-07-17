@@ -32,6 +32,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 public class MainActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     public static final String CONTACT_NUMBER = "com.tigcal.helpme.contact_mobile_number";
@@ -50,12 +51,15 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     private Location mLastKnownLocation;
     private LocationRequest mLocationRequest;
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mPreferences = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         buildGoogleApiClient();
 
