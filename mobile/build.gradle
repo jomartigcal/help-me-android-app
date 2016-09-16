@@ -29,7 +29,7 @@ android {
 
 ext {
     supportLibraryVersion = '23.4.0'
-    playServicesVersion = '9.2.1'
+    playServicesVersion = '9.4.0'
 }
 
 dependencies {
