@@ -118,7 +118,8 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         int id = item.getItemId();
 
         if (id == R.id.action_about) {
-            new AboutDialog(this).show();
+            AboutDialog aboutDialog = AboutDialog.newInstance();
+            aboutDialog.show(getSupportFragmentManager(),getString(R.string.about_header));
             return true;
         }
 
