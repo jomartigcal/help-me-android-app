@@ -15,26 +15,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
+            android:lineSpacingMultiplier="1.2"
             android:textColor="#000000"
-            android:textSize="18dp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/about_developer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:lineSpacingMultiplier="1.2"
             android:paddingLeft="25dp"
             android:text="@string/about_developer"
             android:textColor="#000000"
-            android:textSize="18dp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/about_contact_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:lineSpacingMultiplier="1.2"
             android:paddingLeft="25dp"
             android:text="@string/about_contact_info"
             android:textColor="#000000"
-            android:textSize="18dp" />
+            android:textSize="18sp" />
     </LinearLayout>
 
 </ScrollView>
